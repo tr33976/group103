@@ -1,7 +1,7 @@
 clear
 format long g
 
-% base parameters
+% base aprox parameters
 h = 0.001;
 timeSpan = 0:h:100;
 maxBounces = 10;
