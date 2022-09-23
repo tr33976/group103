@@ -1,11 +1,13 @@
+clc
 clear
 format long g
 
-% base parameters
+% base aprox parameters
 h = 0.001;
 timeSpan = 0:h:100;
 maxBounces = 10;
 defaultparams = true; 
+watertouchsearch = false;
 
 switch defaultparams
     case true
@@ -46,7 +48,6 @@ dvdt = @(y, v) g - C .* abs(v) .* v - max(0, K .*(y-L));
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % calculate position and velocity versus time
 % ode evaluation using RK4 method
 [position, velocity] = RK4Coupled(dvdt, timeSpan, h, 0, 0);
@@ -118,11 +119,51 @@ set(gca, 'YDir','reverse')
 
 %Interpolating function for 4 points either side of deck crossing
 
-%iterate root finding method for exact crossing value to maybe 1E-5 error
+%iterate root finding method for exact crossing value to low error
 
 %%%%%%%%%%%%%%%%%%%%%%%%% END 5 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 6 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% figure it out later.
+if watertouchsearch
+jumperHeight = 1.75;
+
+[wt_len, wt_spring, wt_acc, wt_res_time] = WaterTouchParams(timeSpan, h, jumperHeight, H);
+
+wt_dvdt = @(y, v) g - C .* abs(v) .* v - max(0, wt_spring/m .*(y-wt_len));
+[wt_position, wt_velocity] = RK4Coupled(wt_dvdt, timeSpan, h, 0, 0);
+
+figure('Position',[100 100 1500 500])
+minimaIDX=islocalmin(wt_position);
+plot(timeSpan(minimaIDX),wt_position(minimaIDX)+jumperHeight,'g*')
+hold on
+% this bit adds stars and numbers to bounces
+iter = find(minimaIDX==1, maxBounces);
+stopVal=0;
+for ii = 1:length(find(minimaIDX==1, 10))
+    item=iter(ii);
+    text(timeSpan(item),wt_position(item)-3+jumperHeight,num2str(ii),'Color','k')
+    if ii==length(find(minimaIDX==1, 10))
+        stopVal=timeSpan(item);
+    end
+end
+hold on
+plot(timeSpan, wt_position+jumperHeight)
+yline(H, 'b','River')
+yline(0, 'k', 'Jump Point')
+yline(DECK, 'k', 'Deck')
+xline(stopVal, 'k', ['Stop (s): ',num2str(stopVal)], ...
+    'LabelOrientation', 'aligned', 'LabelHorizontalAlignment', 'left')
+title('Postion Adjusted By Jumper Height vs Time')
+subtitle(['*Y Axis Reversed* Max Gs: ', num2str(wt_acc)])
+xlabel('Time(s)')
+ylabel('Relative Height from Platform (m)')
+ylim([0 80])
+xlim([0 stopVal+5])
+set(gca, 'YDir','reverse')
+
+disp(['Water touch Spring Constant: ', num2str(wt_spring),'N/m'])
+disp(['Water touch Rope Length: ', num2str(wt_len), 'm'])
+
+end
 %%%%%%%%%%%%%%%%%%%%%%%%% END 6 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
