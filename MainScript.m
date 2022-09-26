@@ -101,6 +101,20 @@ text(3.5, max_velocity, ['Max Velocity of 20.0144 m/s reached ' ...
 %suggest central difference method as the easiest with forward
 %differece for the first point and backward diff for last
 %acceleration = NumericalDiff(velocity, h)
+acceleration = NumericalDiff(velocity, h)
+
+figure('Position',[100 100 1500 500])
+plot(timeSpan, acceleration)
+title('Acceleration of the Jumper vs Time')
+xlabel('Time(s)')
+ylabel('Acceleration (m/s/s)')
+xlim([0, 80])
+max_acceleration = max(acceleration);
+hold on                      %not sure how to find when max velocity is 
+plot(2.605,max_acceleration, '*')       %reached other than graphically 
+text(3.5, max_acceleration, ['Max Velocity of 20.0144 m/s reached ' ...
+    'at 2.605 seconds'])
+
 %%%%%%%%%%%%%%%%%%%%%%%%% END 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %to do: Numerically integrate to get distance travelled, 
