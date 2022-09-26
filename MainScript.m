@@ -83,6 +83,17 @@ xlim([0 stopVal+5])
 set(gca, 'YDir','reverse')
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% END 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+figure('Position',[100 100 1500 500])
+plot(timeSpan, velocity)
+title('Velocity of the Jumper vs Time')
+xlabel('Time(s)')
+ylabel('Velocity (m/s)')
+xlim([0, 80])
+max_velocity = max(velocity);
+hold on                      %not sure how to find when max velocity is 
+plot(2.605,max_velocity, '*')       %reached other than graphically 
+text(3.5, max_velocity, ['Max Velocity of 20.0144 m/s reached ' ...
+    'at 2.605 seconds'])
 %to do: plot velocity and identify max speed
 %%%%%%%%%%%%%%%%%%%%%%%%% END 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
