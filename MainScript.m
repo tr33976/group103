@@ -94,14 +94,14 @@ hold on                      %not sure how to find when max velocity is
 plot(2.605,max_velocity, '*')       %reached other than graphically 
 text(3.5, max_velocity, ['Max Velocity of 20.0144 m/s reached ' ...
     'at 2.605 seconds'])
-%to do: plot velocity and identify max speed
+
 %%%%%%%%%%%%%%%%%%%%%%%%% END 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %to do: numerically differentiate velocity to get acceleration
 %suggest central difference method as the easiest with forward
 %differece for the first point and backward diff for last
 %acceleration = NumericalDiff(velocity, h)
-acceleration = NumericalDiff(velocity, h)
+acceleration = NumericalDiff(velocity, h);
 
 figure('Position',[100 100 1500 500])
 plot(timeSpan, acceleration)
@@ -137,7 +137,6 @@ text(3.5, max_acceleration, ['Max Velocity of 20.0144 m/s reached ' ...
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 6 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% figure it out later.
 if watertouchsearch
 jumperHeight = 1.75;
 
