@@ -90,10 +90,10 @@ xlabel('Time(s)')
 ylabel('Velocity (m/s)')
 xlim([0, 80])
 max_velocity = max(velocity);
-hold on                      %not sure how to find when max velocity is 
-plot(2.605,max_velocity, '*')       %reached other than graphically 
-text(3.5, max_velocity, ['Max Velocity of 20.0144 m/s reached ' ...
-    'at 2.605 seconds'])
+maxvel_time = timeSpan(velocity == max_velocity);
+hold on                      
+plot(maxvel_time, max_velocity, '*')       
+text(3.5, max_velocity, "Max Velocity of "+ max_velocity + "m/s reached at " + maxvel_time + " seconds")
 
 %%%%%%%%%%%%%%%%%%%%%%%%% END 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -101,7 +101,7 @@ text(3.5, max_velocity, ['Max Velocity of 20.0144 m/s reached ' ...
 %suggest central difference method as the easiest with forward
 %differece for the first point and backward diff for last
 %acceleration = NumericalDiff(velocity, h)
-acceleration = CentralDifferentiation(velocity, h);
+acceleration = CentralDiff(velocity, h);
 
 figure('Position',[100 100 1500 500])
 plot(timeSpan, acceleration)
@@ -110,10 +110,10 @@ xlabel('Time(s)')
 ylabel('Acceleration (m/s^2)')
 xlim([0, 80])
 max_acceleration = max(acceleration);
-hold on                      %not sure how to find when max velocity is 
-plot(6.397,max_acceleration, '*')       %reached other than graphically 
-text(7, max_acceleration, ['Max Acceleration of 11.0694 m/s^2 reached ' ...
-    'at 6.397 seconds'])
+maxacc_time = timeSpan(acceleration == max_acceleration);
+hold on                      
+plot(maxacc_time, max_acceleration, '*')       
+text(7, max_acceleration, "Max Acceleration of "+ max_acceleration + "m/s^2 reached at " + maxacc_time + " seconds")
 
 %%%%%%%%%%%%%%%%%%%%%%%%% END 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
