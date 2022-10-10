@@ -167,7 +167,8 @@ xline(stopVal, 'k', {'Stop (s): ',num2str(stopVal)}, ...
 title('Distance from Water - Given Parameters')
 subtitle('*Y Axis Reversed*')
 m=timeSpan(position==max(position));
-line([m m], [H position(position==max(position))]);
+line([m m], [H position(position==max(position))], 'Color', 'r');
+text(m+0.2,(H+position(position==max(position)))/2,{'Distance from water (m):', num2str(H-position(position==max(position)))},'Color','k')
 xlabel('Time(s)')
 ylabel({'Relative Postion','from Platform (m)'})
 ylim([0 80])

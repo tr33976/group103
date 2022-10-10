@@ -154,10 +154,6 @@ jumperHeight = 1.75;
 
 wt_dvdt = @(y, v) g - C .* abs(v) .* v - max(0, wt_spring/m .*(y-wt_len));
 [wt_position, wt_velocity] = RK4Coupled(wt_dvdt, timeSpan, h, 0, 0, false);
-f=figure('Position',[100 100 1500 500]);
-minimaIDX=islocalmin(wt_position);
-plot(timeSpan(minimaIDX),wt_position(minimaIDX)+jumperHeight,'g*')
-hold on
 
 
 % no touch
@@ -171,7 +167,8 @@ xline(stopVal, 'k', {'Stop (s): ',num2str(stopVal)}, ...
 title('Distance from Water - Given Parameters')
 subtitle('*Y Axis Reversed*')
 m=timeSpan(position==max(position));
-line([m m], [H position(position==max(position))]);
+line([m m], [H position(position==max(position))], 'Color', 'r');
+text(m,(H+position(position==max(position)))+2,{'Distance from water (m):', num2str(,'Color','k')
 xlabel('Time(s)')
 ylabel({'Relative Postion','from Platform (m)'})
 ylim([0 80])
