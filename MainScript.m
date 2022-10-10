@@ -100,8 +100,7 @@ text(3.5, max_velocity, "Max Velocity of "+ max_velocity + "m/s reached at " + m
 %to do: numerically differentiate velocity to get acceleration
 %suggest central difference method as the easiest with forward
 %differece for the first point and backward diff for last
-%acceleration = NumericalDiff(velocity, h)
-acceleration = CentralDiff(velocity, h);
+acceleration = CentralDifferentiation(velocity, h);
 
 figure('Position',[100 100 1500 500])
 plot(timeSpan, acceleration)
