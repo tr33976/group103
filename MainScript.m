@@ -2,7 +2,7 @@ clc
 clear
 format long g
 
-% base parameters
+% base parameterss
 % base aprox parameters
 h = 0.0001;
 timeSpan = 0:h:80;
