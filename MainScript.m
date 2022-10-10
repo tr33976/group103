@@ -4,11 +4,11 @@ format long g
 
 % base parameters
 % base aprox parameters
-h = 0.00001;
-timeSpan = 0:h:100;
+h = 0.0001;
+timeSpan = 0:h:80;
 maxBounces = 10;
 defaultparams = true; 
-watertouchsearch = false;
+watertouchsearch = true;
 
 switch defaultparams
     case true
@@ -51,9 +51,18 @@ dvdt = @(y, v) g - C .* abs(v) .* v - max(0, K .*(y-L));
 
 % calculate position and velocity versus time
 % ode evaluation using RK4 method
-[position, velocity] = RK4Coupled(dvdt, timeSpan, h, 0, 0);
+[position, velocity] = RK4Coupled(dvdt, timeSpan, h, 0, 0, false);
+
+%intro section plot
+f=figure('Position',[100 100 700 200]);
+plot(timeSpan, position)
+title('Position (m from platform) vs Time')
+xlabel('Time(s)')
+ylabel({'Relative Postion','from Platform (m)'})
+saveas(f, ['fig1','.png'])
+
 % plot position vs time with bounce annotations
-figure('Position',[100 100 1500 500])
+f=figure('Position',[100 100 900 250]);
 minimaIDX=islocalmin(position);
 plot(timeSpan(minimaIDX),position(minimaIDX),'g*')
 hold on
@@ -72,48 +81,50 @@ plot(timeSpan, position)
 yline(H, 'b','River')
 yline(0, 'k', 'Jump Point')
 yline(DECK, 'k', 'Deck')
-xline(stopVal, 'k', ['Stop (s): ',num2str(stopVal)], ...
+xline(stopVal, 'k', {'Stop (s): ',num2str(stopVal)}, ...
     'LabelOrientation', 'aligned', 'LabelHorizontalAlignment', 'left')
 title('Position (m from platform) vs Time')
 subtitle('*Y Axis Reversed*')
 xlabel('Time(s)')
-ylabel('Relative Postion from Platform (m)')
+ylabel({'Relative Postion','from Platform (m)'})
 ylim([0 80])
 xlim([0 stopVal+5])
 set(gca, 'YDir','reverse')
+saveas(f, ['fig2','.png'])
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% END 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-figure('Position',[100 100 1500 500])
+f=figure('Position',[100 100 1500 500]);
 plot(timeSpan, velocity)
 title('Velocity of the Jumper vs Time')
 xlabel('Time(s)')
 ylabel('Velocity (m/s)')
 xlim([0, 80])
 max_velocity = max(velocity);
-maxvel_time = timeSpan(velocity == max_velocity);
-hold on                      
-plot(maxvel_time, max_velocity, '*')       
-text(3.5, max_velocity, "Max Velocity of "+ max_velocity + "m/s reached at " + maxvel_time + " seconds")
-
+hold on                      %not sure how to find when max velocity is 
+plot(2.605,max_velocity, '*')       %reached other than graphically 
+text(3.5, max_velocity, ['Max Velocity of 20.0144 m/s reached ' ...
+    'at 2.605 seconds'])
+saveas(f, ['fig3','.png'])
 %%%%%%%%%%%%%%%%%%%%%%%%% END 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %to do: numerically differentiate velocity to get acceleration
 %suggest central difference method as the easiest with forward
 %differece for the first point and backward diff for last
+%acceleration = NumericalDiff(velocity, h)
 acceleration = CentralDifferentiation(velocity, h);
 
-figure('Position',[100 100 1500 500])
+f=figure('Position',[100 100 1500 500]);
 plot(timeSpan, acceleration)
 title('Acceleration of the Jumper vs Time')
 xlabel('Time(s)')
 ylabel('Acceleration (m/s^2)')
 xlim([0, 80])
 max_acceleration = max(acceleration);
-maxacc_time = timeSpan(acceleration == max_acceleration);
-hold on                      
-plot(maxacc_time, max_acceleration, '*')       
-text(7, max_acceleration, "Max Acceleration of "+ max_acceleration + "m/s^2 reached at " + maxacc_time + " seconds")
-
+hold on                      %not sure how to find when max velocity is 
+plot(6.397,max_acceleration, '*')       %reached other than graphically 
+text(7, max_acceleration, ['Max Acceleration of 11.0694 m/s^2 reached ' ...
+    'at 6.397 seconds'])
+saveas(f, ['fig4','.png'])
 %%%%%%%%%%%%%%%%%%%%%%%%% END 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %to do: Numerically integrate to get distance travelled, 
@@ -139,26 +150,32 @@ text(7, max_acceleration, "Max Acceleration of "+ max_acceleration + "m/s^2 reac
 if watertouchsearch
 jumperHeight = 1.75;
 
-[wt_len, wt_spring, wt_acc, wt_res_time] = WaterTouchParams(timeSpan, h, jumperHeight, H);
+[wt_len, wt_spring, wt_res_time, wt_acc] = WaterTouchParams(jumperHeight, H);
 
 wt_dvdt = @(y, v) g - C .* abs(v) .* v - max(0, wt_spring/m .*(y-wt_len));
-[wt_position, wt_velocity] = RK4Coupled(wt_dvdt, timeSpan, h, 0, 0);
+[wt_position, wt_velocity] = RK4Coupled(wt_dvdt, timeSpan, h, 0, 0, false);
 
-figure('Position',[100 100 1500 500])
-minimaIDX=islocalmin(wt_position);
-plot(timeSpan(minimaIDX),wt_position(minimaIDX)+jumperHeight,'g*')
-hold on
-% this bit adds stars and numbers to bounces
-iter = find(minimaIDX==1, maxBounces);
-stopVal=0;
-for ii = 1:length(find(minimaIDX==1, 10))
-    item=iter(ii);
-    text(timeSpan(item),wt_position(item)-3+jumperHeight,num2str(ii),'Color','k')
-    if ii==length(find(minimaIDX==1, 10))
-        stopVal=timeSpan(item);
-    end
-end
-hold on
+
+% no touch
+f=figure('Position',[100 100 900 250]);
+plot(timeSpan, position)
+yline(H, 'b','River')
+yline(0, 'k', 'Jump Point')
+yline(DECK, 'k', 'Deck')
+xline(stopVal, 'k', {'Stop (s): ',num2str(stopVal)}, ...
+    'LabelOrientation', 'aligned', 'LabelHorizontalAlignment', 'left')
+title('Distance from Water - Given Parameters')
+subtitle('*Y Axis Reversed*')
+m=timeSpan(position==max(position));
+line([m m], [H position(position==max(position))]);
+xlabel('Time(s)')
+ylabel({'Relative Postion','from Platform (m)'})
+ylim([0 80])
+xlim([0 20])
+set(gca, 'YDir','reverse')
+saveas(f, ['fig6','.png'])
+
+f=figure('Position',[100 100 900 250]);
 plot(timeSpan, wt_position+jumperHeight)
 yline(H, 'b','River')
 yline(0, 'k', 'Jump Point')
@@ -175,6 +192,6 @@ set(gca, 'YDir','reverse')
 
 disp(['Water touch Spring Constant: ', num2str(wt_spring),'N/m'])
 disp(['Water touch Rope Length: ', num2str(wt_len), 'm'])
-
+saveas(f, ['fig7','.png'])
 end
 %%%%%%%%%%%%%%%%%%%%%%%%% END 6 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%

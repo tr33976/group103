@@ -40,9 +40,6 @@ function [position, velocity] = RK4Coupled(in_g, timeSpan, h, inital_y, initial_
        position(iterator) = y;
        velocity(iterator) = v;
 
-       if(return_early && iterator > 3 && position(iterator-1) > y)
-        break; 
-       end
     end
  
 end

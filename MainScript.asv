@@ -160,7 +160,7 @@ plot(timeSpan(minimaIDX),wt_position(minimaIDX)+jumperHeight,'g*')
 hold on
 
 
-% plot position vs time with bounce annotations
+% no touch
 f=figure('Position',[100 100 900 250]);
 plot(timeSpan, position)
 yline(H, 'b','River')
@@ -179,6 +179,7 @@ xlim([0 20])
 set(gca, 'YDir','reverse')
 saveas(f, ['fig6','.png'])
 
+f=figure('Position',[100 100 900 250]);
 plot(timeSpan, wt_position+jumperHeight)
 yline(H, 'b','River')
 yline(0, 'k', 'Jump Point')
