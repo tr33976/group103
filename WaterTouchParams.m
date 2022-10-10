@@ -1,52 +1,53 @@
-function [len, spring, time] = WaterTouchParams(timeSpan, h, persHeight, jumpheight)
+function [len, spring, time, acc] = WaterTouchParams(persHeight, jumpheight)
+h = 0.01;
+timeSpan = 0:h:100;
 
 A=jumpheight-persHeight;
 B=A+0.1;
 
-ropeLengths = 40:0.5:60;
-springCoefs = 60:0.5:85;
+ropeLengths = 30:0.5:70;
+springCoefs = 50:0.5:100;
 
-results = zeros((length(ropeLengths)*length(ropeLengths)), 3);
+results = zeros((length(ropeLengths)*length(springCoefs)), 4);
 
 %%%%%% DEFAULT PARAMETERS minus sweep vals %%%
 c = 0.9; % drag coefficient (kg/m)
 m = 80; % jumper mass (kg)
 C = c/m; % drag / mass 
 g = 9.8; % gravity (m/s^2)
-L=25;
-k=90;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-dvdt = @(y, v) g - C .* abs(v) .* v - max(0, k/m .*(y-L));
-totalp = length(results);
+
 
 idx = 1;
-counter = 1;
+f = waitbar(0,'Searching water touch params');
 for L = ropeLengths
     for k = springCoefs
         % velocity ode
-        [position, velocity] = RK4Coupled(dvdt, timeSpan, h, 0, 0);
+        dvdt = @(y, v) g - C .* abs(v) .* v - max(0, k/m .*(y-L));
+        [position, velocity] = RK4Coupled(dvdt, timeSpan, h, 0, 0, false);
         maxpos = max(position);
-        if mod(totalp, counter) == totalp*0.1;disp([num2str(counter/totalp*10), '% done with param sweep']);end
-        counter = counter +1;
+        idx = idx + 1;
+        waitbar(idx/length(results),f, sprintf('Searching water touch param: %d %%', round(idx/length(results)*100)));
         if not(maxpos >= A && maxpos < B); continue; end
         maxacc = max(abs(CentralDifferentiation(velocity, h)/9.8506));
         if maxacc > 2; continue; end
-        minimaIDX=islocalmin(position);
+        minimaIDX = islocalmin(position);
         pos10 = timeSpan(minimaIDX);
         jumpend = pos10(11);
         results(idx,1) = L;
         results(idx,2) = k;
         results(idx,3) = jumpend;
-        idx = idx + 1;
+        results(idx,4) = maxacc;
     end
 end
-
+close(f);
 opt =  results(results(:,3) > 0,:);
 opt = opt(opt(:,3) == min(opt(:,3)), :);
 len = opt(1);
 spring = opt(2);
 time = opt(3);
+acc = opt(4);
 
 end
 

@@ -171,8 +171,7 @@ xline(stopVal, 'k', {'Stop (s): ',num2str(stopVal)}, ...
 title('Distance from Water - Given Parameters')
 subtitle('*Y Axis Reversed*')
 m=timeSpan(position==max(position));
-line([m m], [H position(position==max(position))], 'Color', 'r', 'LineWidth',1);
-text(m+0.1, (H+position(position==max(position)))/2,{'Jumper distance from Water (m):', num2str(H+jumperHeight-max(position))},'Color','k')
+line([m m], [H position(position==max(position))]);
 xlabel('Time(s)')
 ylabel({'Relative Postion','from Platform (m)'})
 ylim([0 80])
@@ -180,7 +179,6 @@ xlim([0 20])
 set(gca, 'YDir','reverse')
 saveas(f, ['fig6','.png'])
 
-f=figure('Position',[100 100 900 250]);
 plot(timeSpan, wt_position+jumperHeight)
 yline(H, 'b','River')
 yline(0, 'k', 'Jump Point')
