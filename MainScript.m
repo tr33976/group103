@@ -133,16 +133,116 @@ saveas(f, ['fig4','.png'])
 % sprintf('Total distance travelled: \n%.2f', DECK)
 %%%%%%%%%%%%%%%%%%%%%%%%% END 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 5 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%to do: Implement function for divided diff interpolation
-% div difference is easier to get the polynomial back as a 
-% anon function for plotting
-%subset timspan and position by the first bounce
+%% Step 1: Find y(i), y(i+1), y(i+2), y(i+3)
+% Defining variables (I'll clean this up)
+H = 74 ;  % Height of jump point (in m)
+D = 31 ;  % Height of deck (in m)
+c = 0.9 ; % Drag coefficient (in kg/m)
+m = 80 ;  % Mass of jumper (in kg)
+L = 25 ;  % Length of bungee rope (in m)
+k = 90 ;  % Spring constant of bungee rope (in N/m)
+g = 9.8 ; % Acceleration due to gravity (in m/s^2)
 
-%Interpolating function for 4 points either side of deck crossing
+C = c/m ; % Drag/mass
+K = k/m ; % Spring constant/mass
 
-%iterate root finding method for exact crossing value to maybe 1E-5 error
-%iterate root finding method for exact crossing value to low error
+cam = H - D ; % The distance at which the camera is placed
 
+t = 100 ;          % Total time of jump (in seconds?)
+h = 0.0001 ;       % Step size
+timeSpan = 0:h:t ; % Number of steps 
+y0 = 0 ;           % Initial position of jumper
+v0 = 0 ;           % Initial velocity of jumper
+
+f = @(y, v) g - C .* abs(v) .* v - max(0, K .*(y-L)) ; 
+
+position =  zeros(1,length(timeSpan)) ;
+velocity =  zeros(1,length(timeSpan)) ;
+    
+y = 0 ; 
+v = 0 ;
+    
+position(1) = y ;
+velocity(1) = v ;
+    
+for i = 2:length(timeSpan)
+    k1 = h * v ;
+    r1 = h * f(y, v) ;
+       
+    k2 = h * (v + r1 / 2) ;
+    r2 = h * f(y + k1 / 2 , v + r1 / 2) ;
+       
+    k3 = h * (v + r2 / 2) ;
+    r3 = h * f(y + k2 / 2 , v + r2 / 2) ;
+       
+    k4 = h * (v + r3) ;
+    r4 = h * f(y + k3, v + r3) ;
+       
+    y = y + (1/6) * (k1 + 2*k2 + 2*k3 + k4) ;
+    v = v + (1/6) * (r1 + 2*r2 + 2*r3 + r4) ;
+
+    position(i) = y ;
+    velocity(i) = v ;
+
+    if i > 3 && position(i-2) < cam && position(i-1) > cam
+        y0 = position(i-3) ; % y(i)
+        x0 = (i-3) * h ;     % t(i)
+        y1 = position(i-2) ; % y(i+1)
+        x1 = (i-2) * h ;     % t(i+1)
+        y2 = position(i-1) ; % y(i+2)
+        x2 = (i-1) * h ;     % t(i+2)
+        y3 = position(i) ;   % y(i+3)
+        x3 = i * h ;         % t(i+3)
+       break 
+    end 
+end
+
+%% Step 2: Perform polynomial interpolation
+%
+% Points to be used for polynomial:
+% (y(i), t(i)), (y(i+1), t(i+1)), (y(i+2), t(i+2)), (y(i+3), t(i+3))
+% (42.9978, 3.3335), (42.9993, 3.3336), (43.0008, 3.3337), (43.0022, 3.3338) 
+% 
+% The Lagrange method will be used:
+L0 = ((x - x1)/(x0 - x1))*((x - x2)/(x0 - x2))*((x - x3)/(x0 - x3)) ;
+L1 = ((x - x0)/(x1 - x0))*((x - x2)/(x1 - x2))*((x - x3)/(x1 - x3)) ;
+L2 = ((x - x0)/(x2 - x0))*((x - x1)/(x2 - x1))*((x - x3)/(x2 - x3)) ;
+L3 = ((x - x0)/(x3 - x0))*((x - x1)/(x3 - x1))*((x - x2)/(x3 - x2)) ;
+
+P1 = y0 * L0 + y1 * L1 + y2 * L2 + y3 * L3 ; % Symbolic expression of p(t)
+P2 = sym2poly(P) ; % Converting p(t) to vector expression
+
+%% Step 3: Finding t at p(t) = H - D
+% Let tn represent the value of t at p(t). To find tn, p(t) will be modified 
+% by subtracting (H - D) so that tn occurs at an x-intercept. 
+% The value of tn will be estimated to a certain degree of error using a 
+% root-finding method. 
+P3 = P2 ; 
+P3(4) = P3(4) - cam ; % Modified version of p(t)
+
+% The bisection method will be used to estimate tn: 
+a = x1 ;          % Lower bound on tn
+b = x2 ;          % Upper bound on tn
+c = (a + b) / 2 ; % Midpoint between lower and upper bounds
+f = @(x) P2(1) * x^3 + P2(2) * x^2 + P2(3) * x + P2(4) ; % Modified p(t)
+error = 1e-10 ;
+
+while abs(f(c)) > error
+    if f(c) < 0 && f(a) < 0
+        a = c ;       % Updating a
+    else
+        b = c ;       % Updating b
+    end
+    c = (a + b) / 2 ; % Updating c
+end
+
+format long 
+tn = c ;
+tn = round(tn, 6) % Value of tn rounded to 6 decimal places
+
+% The value of t at p(t) = H - D is approximately 3.333649
+% Therefore, for the model parameters provided, the camera should 
+% be triggered as close to 3.333649 seconds as possible. 
 %%%%%%%%%%%%%%%%%%%%%%%%% END 5 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
