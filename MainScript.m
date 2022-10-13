@@ -1,6 +1,7 @@
 clc
 clear
 format long g
+close all;
 
 % base parameterss
 % base aprox parameters
@@ -129,8 +130,23 @@ saveas(f, ['fig4','.png'])
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %to do: Numerically integrate to get distance travelled, 
 %simpsons or trapezoid are the options we have it seems.
-% distTravelled = DefIntegral(timeSpan, abs(velocity), h, 0, 60)
-% sprintf('Total distance travelled: \n%.2f', DECK)
+n = length(timeSpan);
+startTime = 0;
+endTime = 60;
+if(mod(n,2) ~= 0)
+   n = n - 1; % make even if not
+h4 = (endTime - startTime)/n; % Calculate h limited to between start and end times
+so = 0;
+for i = 1:n / 2
+    so = so + abs(velocity(2*i - 1)); % sum all odd indices
+end
+se = 0;
+for i = 1:(n / 2) - 1
+    se = se + abs(velocity(2*i)); % sum all even indices
+end
+distTravelled = h4/3 * (abs(velocity(1)) + 4 * so + 2*se + abs(velocity(n)));
+end
+fprintf('Total distance travelled: %.2fm\n', distTravelled);
 %%%%%%%%%%%%%%%%%%%%%%%%% END 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 5 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% Step 1: Find y(i), y(i+1), y(i+2), y(i+3)
@@ -209,7 +225,7 @@ L1 = ((x - x0)/(x1 - x0))*((x - x2)/(x1 - x2))*((x - x3)/(x1 - x3)) ;
 L2 = ((x - x0)/(x2 - x0))*((x - x1)/(x2 - x1))*((x - x3)/(x2 - x3)) ;
 L3 = ((x - x0)/(x3 - x0))*((x - x1)/(x3 - x1))*((x - x2)/(x3 - x2)) ;
 
-P1 = y0 * L0 + y1 * L1 + y2 * L2 + y3 * L3 ; % Symbolic expression of p(t)
+P1 = @(x) y0 * L0(x) + y1 * L1(x) + y2 * L2(x) + y3 * L3(x) ; % Symbolic expression of p(t)
 P2 = sym2poly(P) ; % Converting p(t) to vector expression
 
 %% Step 3: Finding t at p(t) = H - D
