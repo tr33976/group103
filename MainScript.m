@@ -220,27 +220,26 @@ end
 % (42.9978, 3.3335), (42.9993, 3.3336), (43.0008, 3.3337), (43.0022, 3.3338) 
 % 
 % The Lagrange method will be used:
-L0 = ((x - x1)/(x0 - x1))*((x - x2)/(x0 - x2))*((x - x3)/(x0 - x3)) ;
-L1 = ((x - x0)/(x1 - x0))*((x - x2)/(x1 - x2))*((x - x3)/(x1 - x3)) ;
-L2 = ((x - x0)/(x2 - x0))*((x - x1)/(x2 - x1))*((x - x3)/(x2 - x3)) ;
-L3 = ((x - x0)/(x3 - x0))*((x - x1)/(x3 - x1))*((x - x2)/(x3 - x2)) ;
+L0 = @(x) (((x) - x1)/(x0 - x1)).*(((x) - x2)/(x0 - x2)).*(((x) - x3)/(x0 - x3)) ;
+L1 = @(x) (((x) - x0)/(x1 - x0)).*(((x) - x2)/(x1 - x2)).*(((x) - x3)/(x1 - x3)) ;
+L2 = @(x) (((x) - x0)/(x2 - x0)).*(((x) - x1)/(x2 - x1)).*(((x) - x3)/(x2 - x3)) ;
+L3 = @(x) (((x) - x0)/(x3 - x0)).*(((x) - x1)/(x3 - x1)).*(((x) - x2)/(x3 - x2)) ;
 
-P1 = @(x) y0 * L0(x) + y1 * L1(x) + y2 * L2(x) + y3 * L3(x) ; % Symbolic expression of p(t)
-P2 = sym2poly(P) ; % Converting p(t) to vector expression
+P1 = @(x) y0 .* L0(x) + y1 .* L1(x) + y2 .* L2(x) + y3 .* L3(x) ;
 
 %% Step 3: Finding t at p(t) = H - D
 % Let tn represent the value of t at p(t). To find tn, p(t) will be modified 
 % by subtracting (H - D) so that tn occurs at an x-intercept. 
 % The value of tn will be estimated to a certain degree of error using a 
 % root-finding method. 
-P3 = P2 ; 
-P3(4) = P3(4) - cam ; % Modified version of p(t)
+P2 = P1 ; 
+P2 = @(x) P2(x) - 43 ; % Modified version of p(t)
 
 % The bisection method will be used to estimate tn: 
 a = x1 ;          % Lower bound on tn
 b = x2 ;          % Upper bound on tn
 c = (a + b) / 2 ; % Midpoint between lower and upper bounds
-f = @(x) P2(1) * x^3 + P2(2) * x^2 + P2(3) * x + P2(4) ; % Modified p(t)
+f = @(x) P2(x) ;
 error = 1e-10 ;
 
 while abs(f(c)) > error
