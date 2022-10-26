@@ -1,4 +1,18 @@
 function [len, spring, time, acc] = WaterTouchParams(persHeight, jumpheight)
+% WaterTouchParams Iterate values for rope length and spring elasticity to
+% find optimal pair that satisfies a water touch experience and its
+% restrcitions. 
+
+% Input:
+% persHeight: Height of jumper
+% jumpheight: Total height of jump from river to platform
+
+% Output:
+% len: Optimal rope length
+% spring: Optimal spring elasticity
+% time: Jump time for optimal parameters
+% acc: Max G's for optimal paramters
+
 h = 0.01;
 timeSpan = 0:h:100;
 
@@ -25,7 +39,7 @@ for L = ropeLengths
     for k = springCoefs
         % velocity ode
         dvdt = @(y, v) g - C .* abs(v) .* v - max(0, k/m .*(y-L));
-        [position, velocity] = RK4Coupled(dvdt, timeSpan, h, 0, 0, false);
+        [position, velocity] = RK4Coupled(dvdt, timeSpan, h, 0, 0);
         maxpos = max(position);
         idx = idx + 1;
         waitbar(idx/length(results),f, sprintf('Searching water touch param: %d %%', round(idx/length(results)*100)));

@@ -1,4 +1,4 @@
-function [position, velocity] = RK4Coupled(in_g, timeSpan, h, inital_y, initial_v, return_early)
+function [position, velocity] = RK4Coupled(in_g, timeSpan, h, inital_y, initial_v)
 % RK4COUPLED Solves position and velocity coupled ODE.
 %
 % Inputs:
