@@ -93,8 +93,8 @@ fprintf('Max Velocity: %.3fm/s\n', max_velocity);
 %%%%%%%%%%%%%%%%%%%%%%%%% END 2 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%calculate acceleration values with numerical differentiation
 acceleration = CentralDifferentiation(velocity, h);
-
 
 %%%%%plots%%%%%
 f=figure('Position',[100 100 900 275]);
@@ -132,15 +132,19 @@ fprintf('Total distance travelled: %.2fm\n', distTravelled);
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 5 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 cam = H - D; % The distance at which the camera is placed
 
+%get polynomial and bracket values
 [P1, x1, x2] = LagrangeMethod(h, cam, timeSpan, position);
 
-P2 = @(x) P1(x) - 43; % Modified version of p(t)
+% Modified version of p(t) to account for camera
+P2 = @(x) P1(x) - 43;
+
+%estimated root value for camera crossing time
 tn = BisectionMethod(x1, x2, P2, 1e-10);
 
-format long 
-tn = round(tn, 6); % Value of tn rounded to 6 decimal places
+tn = round(tn, 6);
 fprintf('Trigger time: %.3fm\n', tn);
 
+%%%%%plots%%%%%
 f=figure('Position',[100 100 1000 350]);
 t=tiledlayout(1,2, "TileSpacing",'loose');
 title(t, "Jumper Camera Crossing", 'FontSize',15, 'FontWeight','bold');
@@ -167,7 +171,7 @@ text(tn+0.009,cam,{'Deck Crossing', [num2str(round(tn,3)), '(secs)']},'Color','k
 xlim([tn-0.1, tn+0.1]);
 ylim([cam-0.1, cam+0.1]);
 set(gca, 'YDir','reverse');
-saveas(f, ['fig6','.png']);
+saveas(f, ['fig5','.png']);
 %%%%%%%%%%%%%%%%%%%%%%%%% END 5 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -175,11 +179,14 @@ saveas(f, ['fig6','.png']);
 if watertouchsearch
     jumperHeight = 1.75;
     
+    % get optimal params which meet water touch
     [wt_len, wt_spring, wt_res_time, wt_acc] = WaterTouchParams(jumperHeight, H);
     
+    %recalc with optimal params for plotting
     wt_dvdt = @(y, v) g - C .* abs(v) .* v - max(0, wt_spring/m .*(y-wt_len));
     [wt_position, wt_velocity] = RK4Coupled(wt_dvdt, timeSpan, h, 0, 0);
     
+    %%%%%plots%%%%%
     % no touch
     f=figure('Position',[100 100 900 250]);
     plot(timeSpan, position)
@@ -200,6 +207,7 @@ if watertouchsearch
     set(gca, 'YDir','reverse')
     saveas(f, ['fig6','.png'])
     
+    %touch
     f=figure('Position',[100 100 900 250]);
     plot(timeSpan, wt_position+jumperHeight)
     yline(H, 'b','River')
