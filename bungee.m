@@ -31,7 +31,6 @@ dvdt = @(y, v) g - C .* abs(v) .* v - max(0, K .*(y-L));
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 % calculate position and velocity versus time
 % ode evaluation using RK4 method
 [position, velocity] = RK4Coupled(dvdt, timeSpan, h, 0, 0);
