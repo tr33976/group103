@@ -128,24 +128,26 @@ text(7, max_acceleration, ['Max Acceleration of 11.0694 m/s^2 reached ' ...
 saveas(f, ['fig4','.png'])
 %%%%%%%%%%%%%%%%%%%%%%%%% END 3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%to do: Numerically integrate to get distance travelled, 
 %simpsons or trapezoid are the options we have it seems.
-n = length(timeSpan);
 startTime = 0;
 endTime = 60;
-if(mod(n,2) ~= 0)
-   n = n - 1; % make even if not
+n = length(timeSpan);
 h4 = (endTime - startTime)/n; % Calculate h limited to between start and end times
 so = 0;
 for i = 1:n / 2
+     if timeSpan(i) >= endTime
+        break
+    end
     so = so + abs(velocity(2*i - 1)); % sum all odd indices
 end
 se = 0;
 for i = 1:(n / 2) - 1
+    if timeSpan(i) >= endTime
+        break
+    end
     se = se + abs(velocity(2*i)); % sum all even indices
 end
-distTravelled = h4/3 * (abs(velocity(1)) + 4 * so + 2*se + abs(velocity(n)));
-end
+distTravelled = h/3 * (abs(velocity(1)) + 4 * so + 2*se + abs(velocity(n)));
 fprintf('Total distance travelled: %.2fm\n', distTravelled);
 %%%%%%%%%%%%%%%%%%%%%%%%% END 4 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 5 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
