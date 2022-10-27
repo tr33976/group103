@@ -15,7 +15,7 @@ watertouchsearch = true;
 H = 74; % height of jump (m)
 D = 31; % heights of deck from water (m)
 drag = 0.9; % drag coefficient c (kg/m)
-cam = H-D; % height of camera on deck (m)
+cam = H - D; % height of camera on deck (m)
 m = 80; % jumper mass (kg)
 C = drag/m; % drag / mass 
 L = 25; % bunge rope length (m)
@@ -132,14 +132,35 @@ fprintf('Total distance travelled: %.2fm\n', distTravelled);
 %%%%%%%%%%%%%%%%%%%%%%%%% TASK 5 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 cam = H - D; % The distance at which the camera is placed
 
-%get polynomial and bracket values
-[P1, x1, x2] = LagrangeMethod(h, cam, timeSpan, position);
+% Finding four points to be used for polynomial interpolation 
+point_coords = ones(2, 4) ;
 
-% Modified version of p(t) to account for camera
-P2 = @(x) P1(x) - 43;
+for i = 2:length(timeSpan)
+    if i > 3 && position(i-2) < cam && position(i-1) > cam
+        point_coords(2, 1) = position(i-3) ; % y(i)
+        point_coords(1, 1) = (i-4) * h ;     % t(i)
+        point_coords(2, 2) = position(i-2) ; % y(i+1)
+        point_coords(1, 2) = (i-3) * h ;     % t(i+1)
+        point_coords(2, 3) = position(i-1) ; % y(i+2)
+        point_coords(1, 3) = (i-2) * h ;     % t(i+2)
+        point_coords(2, 4) = position(i) ;   % y(i+3)
+        point_coords(1, 4) = (i-1) * h ;     % t(i+3)
+       break 
+    end 
+end
 
-%estimated root value for camera crossing time
-tn = BisectionMethod(x1, x2, P2, 1e-10);
+% Creation of Lagrange polynomial interpolation 
+P = Lagrange(point_coords) ;
+
+% Modified version of p(t) 
+P_mod = @(x) P(x) - 43 ;
+
+% Symbolic expression of p(t) (No calculations performed, just for visualisation)
+syms x
+P_sym = vpa(expand(P_mod(x)), 4) ; % Symbolic expression of p(t)
+
+% Estimated value of t at p(t) = H - D
+tn = Bisection(x1, x2, P_mod, 1e-10) ;
 
 tn = round(tn, 6);
 fprintf('Trigger time: %.3fm\n', tn);
