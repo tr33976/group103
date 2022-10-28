@@ -8,7 +8,7 @@ h = 0.0001;
 timeSpan = 0:h:80;
 maxBounces = 10;
 defaultparams = true; 
-watertouchsearch = true;
+watertouchsearch = false;
 
 %%%%%% DEFAULT PARAMETERS - DONT CHANGE %%%
 H = 74 ;  % Height of jump point (in m)
