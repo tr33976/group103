@@ -43,9 +43,11 @@ for L = ropeLengths
         maxpos = max(position);
         idx = idx + 1;
         waitbar(idx/length(results),f, sprintf('Searching water touch param: %d %%', round(idx/length(results)*100)));
-        if not(maxpos >= A && maxpos < B); continue; end
+        % reject if not within water touch difference
+		if not(maxpos >= A && maxpos < B); continue; end
         maxacc = max(abs(CentralDifferentiation(velocity, h)/9.8506));
-        if maxacc > 2; continue; end
+        % reject if over 2G
+		if maxacc > 2; continue; end
         minimaIDX = islocalmin(position);
         pos10 = timeSpan(minimaIDX);
         jumpend = pos10(11);
@@ -56,8 +58,10 @@ for L = ropeLengths
     end
 end
 close(f);
+% clear up results vector and extract combinations closest to 60 sec jump len
 opt =  results(results(:,3) > 0,:);
 opt = opt(opt(:,3) == min(opt(:,3)), :);
+%optimal params
 len = opt(1);
 spring = opt(2);
 time = opt(3);

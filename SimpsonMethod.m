@@ -22,5 +22,7 @@ function distTravelled = SimpsonMethod(endTime, timeSpan, velocity, h)
     for i = 1:(n / 2) - 1
         se = se + abs(velocity(2*i)); % sum all even indices
     end
+	
+	%calculate total of indexed terms
     distTravelled = h/3 * (abs(velocity(1)) + 4 * so + 2*se + abs(velocity(n)));
 end
