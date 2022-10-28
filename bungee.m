@@ -4,11 +4,11 @@ format long g
 close all;
 
 % Base parameters
-h = 0.0001;
-timeSpan = 0:h:80;
-maxBounces = 10;
-defaultparams = true; 
-watertouchsearch = true;
+h = 0.0001 ;        % Step size
+timeSpan = 0:h:80 ; % Number of steps
+maxBounces = 10 ;   % Maximum number of bounces for jump
+defaultparams = true ; 
+watertouchsearch = true ;
 
 %%%%%% DEFAULT PARAMETERS - DONT CHANGE %%%
 H = 74 ;  % Height of jump point (in m)
@@ -22,7 +22,7 @@ g = 9.8 ; % Acceleration due to gravity (in m/s^2)
 C = c/m ; % Drag/mass
 K = k/m ; % Spring constant/mass
 
-cam = H - D ; % The distance at which the camera is placed
+cam = H - D ; % Distance at which the camera is placed (m)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Velocity ODE - Captures parameters set above when run
